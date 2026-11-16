@@ -1,2 +1,174 @@
-# PIIShield-AI
-PIIShield AI is a privacy-preserving NLP middleware that detects and masks Personally Identifiable Information (PII) using Regex and spaCy NER. It features adaptive placeholder strategies, secure local mapping, integrity validation, failure prediction, safe restoration, and an interactive Streamlit dashboard.
+# 🛡️ PIIShield AI
+
+## Privacy-Preserving NLP: Round-Trip Fidelity Evaluation of PII Restoration in Masked LLM Prompting Pipelines
+
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Streamlit 1.28+](https://img.shields.io/badge/streamlit-1.28+-red.svg)](https://streamlit.io/)
+[![spaCy 3.8+](https://img.shields.io/badge/spaCy-3.8+-green.svg)](https://spacy.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Tests: 24/24 Passed](https://img.shields.io/badge/Tests-24%2F24%20Passed-brightgreen.svg)](./tests/)
+
+**PIIShield AI** is an enterprise-grade, client-side privacy middleware and empirical evaluation platform. It demonstrates and measures how reliably Personally Identifiable Information (PII) placeholders survive external Large Language Model (LLM) transformations and how accurately original sensitive values can be restored in downstream outputs without privacy leakage.
+
+---
+
+## 🏛️ System Architecture
+
+```
+[Raw User Prompt containing PII]
+              │
+              ▼
+    ┌───────────────────┐
+    │  1. PII DETECTION │  (Hybrid Regex + spaCy NER)
+    └─────────┬─────────┘  Extracts: PERSON, EMAIL, PHONE, LOCATION, DATE, ADDRESS, ID
+              │
+              ▼
+    ┌───────────────────┐
+    │  2. PII MASKING   │  Replaces sensitive spans with chosen Strategy (A, B, C, or D)
+    └─────────┬─────────┘  
+              │
+              ├───► [ISOLATED LOCAL MAPPING DICTIONARY] ──┐ (Stored in secure local memory;
+              │                                           │  NEVER sent to external LLM)
+              ▼                                           │
+    ┌───────────────────┐                                 │
+    │ 3. LLM PROCESSING │ (Demo Mode, Local Ollama, APIs) │
+    └─────────┬─────────┘ Only sees masked text!          │
+              │                                           │
+              ▼                                           │
+    ┌────────────────────────┐                            │
+    │ 4. PLACEHOLDER AUDIT   │                            │
+    │    & VALIDATION ENGINE │◄───────────────────────────┤
+    └─────────┬──────────────┘ Verifies tokens against:   │
+              │                • Correct match            │
+              │                • Dropped / Missed         │
+              │                • Inflected / Corrupted    │
+              │                • Mistranslated (French)   │
+              │                • Hallucinated / Duplicate │
+              │                • Cross-Wired swaps        │
+              │                • Cryptographic CRC MD5    │
+              ▼                                           │
+    ┌────────────────────────┐                            │
+    │ 5. ZERO-LEAKAGE        │                            │
+    │    PII RESTORATION     │◄───────────────────────────┘
+    └─────────┬──────────────┘ ONLY restored if token is VALIDATED!
+              │
+              ▼
+    ┌────────────────────────┐
+    │ 6. RESEARCH EVALUATION │ Precision, Recall, F1, Preservation Rate,
+    │    & ML PREDICTION     │ Logistic Regression & Random Forest Risk Model
+    └────────────────────────┘
+```
+
+---
+
+## 🛡️ Four Placeholder Masking Strategies
+
+| Strategy | Token Structure | Example Format | Characteristics & Trade-offs |
+| :--- | :--- | :--- | :--- |
+| **Strategy A: Basic Typed** | `[<TYPE>_<INDEX>]` | `[PERSON_1]`, `[EMAIL_1]` | Standard baseline. High semantic clarity for LLMs; prone to index permutation across multi-turn sessions. |
+| **Strategy B: Random Typed** | `[<TYPE>_<SALT>]` | `[PERSON_X7K92]`, `[EMAIL_M4N81]` | Typed tag salted with 5-character SHA-256 entropy. Prevents token reuse collisions across conversation turns. |
+| **Strategy C: Opaque Random** | `<PREFIX><HASH>` | `ZXQ7K92M`, `ZD483CFE` | Fixed 8-character token with **zero semantic entity leakage**. Completely hides what type of entity is masked. |
+| **Strategy D: Protected Integrity** | `[PROT:<TYPE>:<ID>:<CHECKSUM>]` | `[PROT:PERSON:P1:C4D9]` | Embeds a 4-character deterministic cryptographic CRC MD5 checksum. **100% tamper detection** against corruption. |
+
+---
+
+## 🔍 Seven Failure Classification Modes
+
+1. **`CORRECT`**: Placeholder preserved exactly as given; passes structural and cryptographic checks.
+2. **`MISSED`**: Placeholder omitted and substituted by a generic noun phrase (e.g. *"the applicant"*).
+3. **`DROPPED`**: Token is completely absent from the response text.
+4. **`INFLECTED`**: Token altered in formatting (brackets removed `PERSON_1`, lowercase `[person_1]`).
+5. **`MISTRANSLATED`**: Token identifier translated into another language by the LLM (e.g. `[PERSONNE_1]` in French).
+6. **`HALLUCINATED`**: Spurious placeholder token generated by LLM that was never present in the prompt.
+7. **`CROSS_WIRED`**: Multiple placeholders swapped relative positions or entity bindings.
+
+---
+
+## 💻 Streamlit Multi-Page Interface (10 Sections)
+
+The application provides a comprehensive 10-section research workstation:
+
+1. **`📊 Overview Dashboard`**: Live system health, micro-averaged metrics, failure distribution pie chart, and recent audit runs.
+2. **`📚 Research Dataset`**: Filterable explorer for the 300-prompt synthetic dataset and **Public Kaggle Benchmark** suite.
+3. **`🔍 PII Detection & Masking`**: Interactive entity scanner, character-span highlighter, and multi-strategy masking lab.
+4. **`🤖 LLM Processing`**: Gateway supporting local Ollama, cloud OpenAI-compatible APIs, and 8 perturbation scenarios.
+5. **`🔐 Validation & Restoration`**: Automated placeholder integrity auditor enforcing the zero-leakage guarantee.
+6. **`🧠 Failure Prediction`**: ML classifier (Logistic Regression & Random Forest) estimating placeholder failure risk.
+7. **`🛡️ Placeholder Strategies`**: Side-by-side comparison lab with live cryptographic checksum tamper testing.
+8. **`📈 Research Evaluation`**: Mathematically rigorous restoration metrics ($P_{rest}, R_{rest}, F_1$) and database commit tools.
+9. **`📜 Experiment History`**: Filterable historical audit trail with CSV export and raw-vs-restored inspection.
+10. **`📖 About the Research`**: Academic documentation, threat model, mathematical formulations, and citations.
+
+---
+
+## 🚀 Quick Start Guide
+
+### 1. Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/your-username/PIIShield-AI.git
+cd PIIShield-AI
+
+# Install production dependencies
+pip install -r requirements.txt
+
+# Download spaCy model
+python -m spacy download en_core_web_sm
+```
+
+### 2. Launch the Application
+
+```bash
+# Launch on port 8531
+streamlit run app.py --server.port 8531
+```
+Open your browser at **`http://localhost:8531`**.
+
+---
+
+## 🧪 Automated Test Suites (24 Tests)
+
+Run the complete test suite across all four subsystems:
+
+```bash
+# 1. Core Pipeline & 7 Failure Modes (7 tests)
+python tests/test_pipeline.py
+
+# 2. Synthetic Dataset & Character Offsets (6 tests)
+python tests/test_dataset.py
+
+# 3. Public Kaggle Benchmark Integration (6 tests)
+python tests/test_kaggle_integration.py
+
+# 4. ML Failure Prediction Engine (5 tests)
+python tests/test_failure_predictor.py
+```
+
+All 24 automated tests pass 100% in sandboxed environments, leaving the production SQLite database untouched.
+
+---
+
+## 📚 Complete Research Documentation
+
+* [`FINAL_PROJECT_AUDIT.md`](./FINAL_PROJECT_AUDIT.md) — Comprehensive technical audit of all modules and components.
+* [`RESEARCH_METHODOLOGY.md`](./RESEARCH_METHODOLOGY.md) — Research questions, metric equations, and mathematical formulations.
+* [`EXPERIMENTAL_RESULTS.md`](./EXPERIMENTAL_RESULTS.md) — Empirical benchmark data, confusion matrices, and latency tables.
+* [`SYSTEM_ARCHITECTURE.md`](./SYSTEM_ARCHITECTURE.md) — Component dataflows, database schema, and sequence diagrams.
+* [`SECURITY_AND_PRIVACY.md`](./SECURITY_AND_PRIVACY.md) — Threat modeling, zero-leakage proofs, and differential privacy limitations.
+* [`FINAL_DEMONSTRATION_GUIDE.md`](./FINAL_DEMONSTRATION_GUIDE.md) — 10-minute viva examination walkthrough with copy-paste test prompts.
+* [`PROJECT_COMPLETION_REPORT.md`](./PROJECT_COMPLETION_REPORT.md) — Formal deliverable completion matrix and answers to master prompt requirements.
+
+---
+
+## 🔒 Privacy & Ethical Disclaimers
+
+* **Zero-Knowledge Guarantee:** The dictionary mapping placeholders to sensitive plaintexts never leaves local client volatile memory.
+* **Non-Restoration Policy:** Ambiguous, dropped, or corrupted tokens are strictly left unrestored or tagged with warning labels.
+* **Pseudonymization vs. Differential Privacy:** PIIShield AI provides syntactic pseudonymization. It does not provide mathematical $(\epsilon, \delta)$-differential privacy against high-cardinality quasi-identifier inference.
+
+---
+
+## 📄 License & Academic Citation
+
+Developed as a Final Year AI/ML Computer Science Capstone Project, 2026. Distributed under the MIT License.

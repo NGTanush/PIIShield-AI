@@ -1,0 +1,68 @@
+{
+  "dataset_name": "PIIShield AI Research Benchmark Dataset",
+  "version": "2.0.0",
+  "created_at": "2026-11-11T02:36:12.018475",
+  "random_seed": 42,
+  "total_prompts": 300,
+  "total_entities": 852,
+  "avg_entities_per_prompt": 2.84,
+  "single_entity_prompts": 64,
+  "multi_entity_prompts": 236,
+  "density_distribution": {
+    "Low": 64,
+    "Medium": 148,
+    "High": 88
+  },
+  "entity_category_counts": {
+    "PERSON": 280,
+    "LOCATION": 88,
+    "ADDRESS": 68,
+    "DATE": 128,
+    "IDENTIFICATION_NUMBER": 84,
+    "EMAIL": 120,
+    "PHONE": 84
+  },
+  "scenario_distribution": {
+    "Multiple Placeholder Confusion": 35,
+    "Summarization": 25,
+    "Normal": 53,
+    "Placeholder Deletion": 20,
+    "Multi-Entity Processing": 34,
+    "Placeholder Duplication": 13,
+    "Placeholder Modification": 25,
+    "Paraphrasing": 35,
+    "Grammar Correction": 31,
+    "Translation": 29
+  },
+  "language_distribution": {
+    "English": 220,
+    "Hinglish / Code-Mixed": 80
+  },
+  "placeholder_strategies": [
+    {
+      "id": "A",
+      "name": "Basic Typed",
+      "format": "[ENTITY_TYPE_INDEX]",
+      "example": "[PERSON_1]"
+    },
+    {
+      "id": "B",
+      "name": "Random Typed",
+      "format": "[ENTITY_TYPE_SALT]",
+      "example": "[PERSON_X7K92]"
+    },
+    {
+      "id": "C",
+      "name": "Opaque Random",
+      "format": "8-char Alphanumeric",
+      "example": "ZXQ7K92M"
+    },
+    {
+      "id": "D",
+      "name": "Protected Integrity",
+      "format": "[PROT:TYPE:ID:CHECKSUM]",
+      "example": "[PROT:PERSON:P1:C4D9]"
+    }
+  ],
+  "research_notes": "All prompts, personal identifiers, contact points, and numbers in this dataset are synthetically generated. Ground-truth mappings are stored separately from prompt inputs to prevent model exposure. Controlled test cases simulate empirical failure modes without falsely attributing outputs to live LLM APIs."
+}

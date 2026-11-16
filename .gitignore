@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+venv/
+env/
+.venv/
+.env
+
+# Database & Logs
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Kaggle Credentials & Public Competition Raw Data
+kaggle.json
+.kaggle/
+*kaggle*.token
+dataset/public_benchmark/raw/train.json
+dataset/public_benchmark/raw/test.json
+dataset/raw/
+*.zip
+

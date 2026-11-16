@@ -1,0 +1,39 @@
+{
+  "metrics": {
+    "total_prompts": 300,
+    "total_entities": 852,
+    "avg_entities": 2.84,
+    "single_entity_prompts": 64,
+    "multi_entity_prompts": 236
+  },
+  "density_distribution": {
+    "Low": 64,
+    "Medium": 148,
+    "High": 88
+  },
+  "entity_categories": {
+    "PERSON": 280,
+    "LOCATION": 88,
+    "ADDRESS": 68,
+    "DATE": 128,
+    "IDENTIFICATION_NUMBER": 84,
+    "EMAIL": 120,
+    "PHONE": 84
+  },
+  "scenarios": {
+    "Multiple Placeholder Confusion": 35,
+    "Summarization": 25,
+    "Normal": 53,
+    "Placeholder Deletion": 20,
+    "Multi-Entity Processing": 34,
+    "Placeholder Duplication": 13,
+    "Placeholder Modification": 25,
+    "Paraphrasing": 35,
+    "Grammar Correction": 31,
+    "Translation": 29
+  },
+  "languages": {
+    "English": 220,
+    "Hinglish / Code-Mixed": 80
+  }
+}
